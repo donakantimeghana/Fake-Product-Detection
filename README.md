@@ -73,11 +73,13 @@ Each product is assigned a unique QR code containing product details. When the Q
 6. Random Forest model predicts whether the product is Genuine or Counterfeit.
 7. Authentication result is displayed to the user.
 
----
+--------------
 
 ##  System Architecture
 <img width="1162" height="713" alt="System Architecture of Fake product Detection" src="https://github.com/user-attachments/assets/a269fc98-84df-44fd-b459-62537930a092" />
----
+
+
+----------
 ## Output
 <img width="1641" height="549" alt="Valid Product Authentication OP1" src="https://github.com/user-attachments/assets/a9dfed68-a34a-4f9f-a9b1-8bbe148b07cb" />
 
