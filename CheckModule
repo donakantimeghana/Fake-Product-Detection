@@ -1,0 +1,97 @@
+import os
+
+from QRCodeGeneration import generate_qr
+from QRCodeScanningAndDecoding import scan_qr
+from RandomForestClassification import train_model
+from AuthenticationModule import authenticate_product
+from dataset import load_dataset
+
+
+# Step 1: Create QR code folder
+os.makedirs("qrcodes", exist_ok=True)
+
+
+# Step 2: Load dataset
+df = load_dataset()
+
+
+# Step 3: Generate QR codes for all products
+
+for i, row in df.iterrows():
+
+    product_id = row["ProductID"]
+    brand = row["Brand"]
+    expiry_valid = row["ExpiryValid"]
+
+    # Assign expiry date
+    if expiry_valid == 1:
+        expiry = "2026-12-31"
+    else:
+        expiry = "2020-01-01"
+
+
+    qr_data = (
+        f"ProductID:{product_id};"
+        f"Brand:{brand};"
+        f"Expiry:{expiry}"
+    )
+
+
+    filename = os.path.join(
+        "qrcodes",
+        f"qr_product_{product_id}.png"
+    )
+
+
+    generate_qr(qr_data, filename)
+
+
+print("✅ All QR codes saved inside the 'qrcodes' folder!")
+
+
+# Step 4: Train model
+model = train_model()
+
+
+# Step 5: Scan and authenticate QR codes
+
+for i, row in df.iterrows():
+
+    product_id = row["ProductID"]
+
+    filename = os.path.join(
+        "qrcodes",
+        f"qr_product_{product_id}.png"
+    )
+
+
+    scanned_data = scan_qr(filename)
+
+
+    if scanned_data:
+
+        parts = scanned_data.split(";")
+
+        product_id = int(parts[0].split(":")[1])
+
+        brand = parts[1].split(":")[1]
+
+        expiry_str = parts[2].split(":")[1]
+
+
+        expiry_year = int(expiry_str.split("-")[0])
+
+        expiry_valid = 1 if expiry_year >= 2025 else 0
+
+
+        result = authenticate_product(
+            model,
+            product_id,
+            brand,
+            expiry_valid
+        )
+
+
+        print(
+            f"{filename} → {scanned_data} → {result}"
+        )
